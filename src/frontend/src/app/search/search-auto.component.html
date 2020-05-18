@@ -1,0 +1,11 @@
+<app-search-input (query)="search($event)"></app-search-input>
+
+<div class="position-relative">
+
+  <ngx-loading [show]="isSearching"></ngx-loading>
+
+  <div class="alert alert-danger col-12 mt-3" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+  <app-media-results [results]="results" [mediaType]="searchMediaType()"></app-media-results>
+
+</div>

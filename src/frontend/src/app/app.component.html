@@ -1,0 +1,44 @@
+<nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
+  <a class="navbar-brand" href="#">Nefarious</a>
+  <button class="navbar-toggler" type="button" (click)="toggleCollapseNav()" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" [ngbCollapse]="isCollapsed" id="navbarCollapse">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link" [routerLink]="['search']" (click)="collapseNav()" routerLinkActive="active">Search</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" [routerLink]="['discover']" (click)="collapseNav()" routerLinkActive="active">Discover</a>
+      </li>
+      <li class="nav-item">
+        <div ngbDropdown class="d-inline-block">
+          <span class="nav-link" [class.active]="watchingMovies.isActive || watchingTV.isActive" ngbDropdownToggle>Watching</span>
+          <div ngbDropdownMenu>
+            <a class="dropdown-item" [routerLink]="['watching/tv']" (click)="collapseNav()" routerLinkActive="active" #watchingTV="routerLinkActive">TV</a>
+            <a class="dropdown-item" [routerLink]="['watching/movie']" (click)="collapseNav()" routerLinkActive="active" #watchingMovies="routerLinkActive">Movies</a>
+          </div>
+        </div>
+      </li>
+      <li class="nav-item">
+        <div ngbDropdown class="d-inline-block">
+          <span class="nav-link" [class.active]="wantedMovies.isActive || wantedTV.isActive" ngbDropdownToggle>Wanted</span>
+          <div ngbDropdownMenu>
+            <a class="dropdown-item" [routerLink]="['wanted/tv']" (click)="collapseNav()" routerLinkActive="active" #wantedTV="routerLinkActive">TV</a>
+            <a class="dropdown-item" [routerLink]="['wanted/movie']" (click)="collapseNav()" routerLinkActive="active" #wantedMovies="routerLinkActive">Movies</a>
+          </div>
+        </div>
+      </li>
+      <li class="nav-item" *ngIf="isStaff()">
+        <a class="nav-link" [routerLink]="['settings']" (click)="collapseNav()" routerLinkActive="active">Settings</a>
+      </li>
+    </ul>
+    <a [routerLink]="['/login']">
+      <span *ngIf="!isLoggedIn()">Login</span>
+      <span *ngIf="isLoggedIn()"><span class="oi oi-person"></span> {{ getUserName() }}</span>
+    </a>
+  </div>
+</nav>
+<main role="main">
+  <router-outlet></router-outlet>
+</main>

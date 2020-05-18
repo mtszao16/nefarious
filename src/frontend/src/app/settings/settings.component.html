@@ -1,0 +1,203 @@
+<div class="position-relative">
+  <ngx-loading [show]="isSaving"></ngx-loading>
+  <form class="was-validated" [formGroup]="form" (ngSubmit)="submit()">
+    <div class="d-flex justify-content-end my-3">
+      <button type="button" class="btn btn-sm btn-info mx-1" (click)="verifySettings()">
+        Verify Settings
+        <span class="oi oi-pulse"></span>
+      </button>
+      <button class="btn btn-success mx-1" [ngClass]="{'btn-success': form.valid, 'btn-danger': !form.valid}">
+        Save
+        <span class="oi oi-check"></span>
+      </button>
+    </div>
+    <div class="row" *ngIf="form">
+      <div class="col-12 col-sm-6 col-md-4">
+        <!-- jackett -->
+        <div class="card">
+          <div class="card-header">Jackett</div>
+          <div class="card-body">
+            <div class="form-group">
+              <label>Host</label>
+              <input type="text" class="form-control" placeholder="localhost" formControlName="jackett_host" required>
+            </div>
+            <div class="form-group">
+              <label>Port</label>
+              <input type="number" class="form-control" placeholder="9117" formControlName="jackett_port" required>
+            </div>
+            <div class="form-group">
+              <label>API Token</label>
+              <input type="text" class="form-control" placeholder="" formControlName="jackett_token" required>
+            </div>
+            <div class="form-group d-flex justify-content-between">
+              <button type="button" class="btn btn-sm btn-secondary position-relative" (click)="verifyJackettIndexers()">
+                <ngx-loading [show]="isVeryingJackettIndexers"></ngx-loading>
+                Verify Indexers
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- transmission -->
+      <div class="col-12 col-sm-6 col-md-4">
+        <div class="card">
+          <div class="card-header">Transmission</div>
+          <div class="card-body">
+            <div class="form-group">
+              <label>Host</label>
+              <input type="text" class="form-control" placeholder="localhost" formControlName="transmission_host" required>
+            </div>
+            <div class="form-group">
+              <label>Port</label>
+              <input type="number" class="form-control" placeholder="9091" formControlName="transmission_port" required>
+            </div>
+            <div class="form-group">
+              <label>User</label>
+              <input type="text" class="form-control" placeholder="" formControlName="transmission_user">
+            </div>
+            <div class="form-group">
+              <label>Password</label>
+              <input type="password" class="form-control" placeholder="" formControlName="transmission_pass">
+            </div>
+            <div class="form-group">
+              <label>TV Download Sub Directory</label>
+              <input type="text" class="form-control" placeholder="TV Shows/" formControlName="transmission_tv_download_dir" required>
+              <small class="form-text text-muted">Relative to download path</small>
+            </div>
+            <div class="form-group">
+              <label>Movie Download Sub Directory</label>
+              <input type="text" class="form-control" placeholder="Movies/" formControlName="transmission_movie_download_dir" required>
+              <small class="form-text text-muted">Relative to download path</small>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-sm-6 col-md-4">
+        <!-- Global -->
+        <div class="card">
+          <div class="card-header">Global</div>
+          <div class="card-body">
+            <div class="form-group">
+              <label>Language
+                <span class="text-info oi oi-info" placement="left" ngbTooltip="Titles, descriptions and artwork may be localized if data is available in TMDB"></span>
+              </label>
+              <ng-select [multiple]="false" [items]="getLanguages()" bindValue="iso_639_1" bindLabel="english_name" formControlName="language"></ng-select>
+            </div>
+          </div>
+        </div>
+        <!-- quality profiles -->
+        <div class="card">
+          <div class="card-header">Quality Profiles</div>
+          <div class="card-body">
+            <div class="form-group">
+              <label>TV</label>
+              <select type="text" class="form-control" formControlName="quality_profile_tv" required>
+                <option *ngFor="let profile of qualityProfiles()" [value]="profile">{{ profile }}</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Movies</label>
+              <select type="text" class="form-control" formControlName="quality_profile_movies" required>
+                <option *ngFor="let profile of qualityProfiles()" [value]="profile">{{ profile }}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <!-- keyword filters -->
+        <div class="card">
+          <div class="card-header d-flex justify-content-between">
+            <span>Keyword Search Exclusions</span>
+            <span class="text-info oi oi-info" placement="left" ngbTooltip="Avoid search results with keywords, i.e 'x265', '265', 'hevc'"></span>
+          </div>
+          <div class="card-body">
+            <div class="form-group">
+              <ng-select [multiple]="true" [items]="[]" [addTag]="true" formControlName="exclusions"></ng-select>
+              <small *ngIf="hasExclusions()" class="form-text text-muted">Avoiding search results with keywords: {{ form.get('exclusions').value }}</small>
+            </div>
+          </div>
+        </div>
+        <!-- hardcoded subs -->
+        <div class="card">
+          <div class="card-header">Hardcoded Subtitles</div>
+          <div class="card-body">
+            <div class="form-check">
+              <input class="form-check-input" type="radio" [value]="true" formControlName="allow_hardcoded_subs" id="hc-true">
+              <label class="form-check-label" for="hc-true">
+                Allow
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" [value]="false" formControlName="allow_hardcoded_subs" id="hc-false">
+              <label class="form-check-label" for="hc-false">
+                Prevent
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- users -->
+      <div class="col-12 col-sm-6 col-md-4">
+        <form class="was-validated" [formGroup]="form">
+          <div class="card" *ngIf="users">
+            <div class="card-header">Users</div>
+            <div class="card-body" formArrayName="users">
+              <div *ngFor="let control of form.controls.users.controls; let i=index" [formGroupName]="i">
+                <div class="d-flex justify-content-around">
+                  <div class="form-group mr-1">
+                    <input type="text" class="form-control" [id]="i+'username'" formControlName="username" required placeholder="username">
+                  </div>
+                  <div class="form-group mr-1">
+                    <ng-container *ngIf="control.value.id">
+                      <input type="password" class="form-control" [id]="i+'password'" formControlName="password" placeholder="new password">
+                      <small class="form-text text-muted">Leave blank to keep existing password</small>
+                    </ng-container>
+                    <ng-container *ngIf="!control.value.id">
+                      <input type="password" class="form-control" [id]="i+'password'" formControlName="password" placeholder="password" required>
+                    </ng-container>
+                  </div>
+                  <div class="form-group mr-1">
+                    <button type="button" class="btn btn-sm btn-success" (click)="saveUser(i)"><span class="oi oi-check"></span></button>
+                  </div>
+                  <div class="form-group">
+                    <button type="button" class="btn btn-sm btn-danger" [disabled]="!canDeleteUser(i)" (click)="removeUser(i)"><span class="oi oi-minus"></span></button>
+                  </div>
+                </div>
+                <hr>
+              </div>
+              <div class="d-flex justify-content-end">
+                <button type="button" class="btn btn-xs btn-sm btn-success" (click)="addUser()"><span class="oi oi-plus"></span></button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <!-- webhook -->
+      <div class="col-12 col-sm-6 col-md-4">
+        <div class="card">
+          <div class="card-header">Webhook</div>
+          <div class="card-body">
+            <p>The webhook will be called when any media is downloaded</p>
+            <div class="form-group">
+              <label>URL</label>
+              <input type="text" class="form-control" placeholder="https://..." formControlName="webhook_url">
+            </div>
+            <div class="form-group">
+              <label>Key</label>
+              <input type="text" class="form-control" placeholder="text" formControlName="webhook_key">
+            </div>
+            <div *ngIf="form.get('webhook_url').value && form.get('webhook_key').value">
+              <small>These settings would post something like
+                <div class="text-primary">{{'{"' + form.get('webhook_key').value + '": "[some media] was downloaded"}'}}</div>
+                  to
+                <div class="text-primary">{{form.get('webhook_url').value}}</div>
+              </small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+  <footer class="d-flex justify-content-end">
+    <a target="_blank" [href]="'https://github.com/lardbit/nefarious/tree/' + gitCommit" *ngIf="gitCommit">git@{{ gitCommit }}</a>
+  </footer>
+</div>

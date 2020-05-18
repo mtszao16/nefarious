@@ -1,0 +1,20 @@
+bpython==0.18
+celery==4.4.0
+dj-database-url==0.5.0
+Django==3.0.2
+django-filter==2.2.0
+djangorestframework==3.11.0
+gunicorn==20.0.4
+jsonfield2==3.1.0
+redis==3.3.11
+regex==2020.1.8
+requests==2.22.0
+# tmdbsimple - forked version including languages
+git+https://github.com/lardbit/tmdbsimple.git
+transmissionrpc==0.11
+uvicorn==0.11.2
+whitenoise==5.0.1
+starlette==0.13.1
+websocket-client==0.57.0
+django-redis==4.11.0
+celery-once==3.0.1
